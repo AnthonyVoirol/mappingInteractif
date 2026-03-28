@@ -24,15 +24,16 @@ def main():
             
         if frame is not None:
             mask, frame_filtered = pink_tracker.apply_mask(frame)
-            center, contour = pink_tracker.get_tracking_data(mask)
-            
-            engine.update_obstacle(contour)
-            
-            if center is not None and contour is not None:
+            tracking_data = pink_tracker.get_tracking_data(mask)
+            contours_only = [data[1] for data in tracking_data]
+            engine.update_obstacles(contours_only)
+
+            for center, contour in tracking_data:
                 cv2.drawContours(frame, [contour], -1, (0, 255, 0), 2)
                 cv2.circle(frame, center, 7, (255, 255, 255), -1)
                 cv2.putText(frame, f"Post-it: {center}", (center[0]+10, center[1]), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                
             positions = engine.get_balls_positions()
             for pos in positions:
                 cv2.circle(frame, pos, config.BALL_RADIUS, (255, 255, 255), -1)

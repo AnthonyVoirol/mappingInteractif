@@ -30,22 +30,22 @@ class ColorTracker:
     
     def get_tracking_data(self, mask):
         """
-        Trouve le plus grand contour et retourne ses coordonnées.
+        Trouve TOUS les contours valides et retourne une liste.
         """
         if mask is None:
-            return None, None
+            return []
 
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        if contours:
-            largest_contour = max(contours, key=cv2.contourArea)
-            
-            if cv2.contourArea(largest_contour) > 500:
-                M = cv2.moments(largest_contour)
+        valid_data = []
+        
+        for contour in contours:
+            if cv2.contourArea(contour) > 500:
+                M = cv2.moments(contour)
                 if M["m00"] != 0:
                     cX = int(M["m10"] / M["m00"])
                     cY = int(M["m01"] / M["m00"])
-                    return (cX, cY), largest_contour
-        
-        return None, None
+                    valid_data.append(((cX, cY), contour))
+                    
+        return valid_data
         
