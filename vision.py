@@ -27,3 +27,25 @@ class ColorTracker:
         res = cv2.bitwise_and(frame, frame, mask=mask)
         
         return mask, res
+    
+    def get_tracking_data(self, mask):
+        """
+        Trouve le plus grand contour et retourne ses coordonnées.
+        """
+        if mask is None:
+            return None, None
+
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if contours:
+            largest_contour = max(contours, key=cv2.contourArea)
+            
+            if cv2.contourArea(largest_contour) > 500:
+                M = cv2.moments(largest_contour)
+                if M["m00"] != 0:
+                    cX = int(M["m10"] / M["m00"])
+                    cY = int(M["m01"] / M["m00"])
+                    return (cX, cY), largest_contour
+        
+        return None, None
+        
