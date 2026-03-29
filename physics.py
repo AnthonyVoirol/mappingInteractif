@@ -12,7 +12,7 @@ class PhysicsEngine:
         
     def spawn_ball(self):
         body = pymunk.Body()
-        body.position = config.CAMERA_WIDTH // 2, 50
+        body.position = config.SCREEN_WIDTH // 2, 50
         poly = pymunk.Circle(body, config.BALL_RADIUS)
         poly.mass = config.BALL_MASS
         poly.elasticity = config.BALL_ELASTICITY
@@ -53,7 +53,7 @@ class PhysicsEngine:
     
     def clean_balls(self):
         for body in self.listBalls[:]:
-            if body.position.y > config.CAMERA_HEIGHT + 50:
+            if body.position.y > config.SCREEN_HEIGHT + 50:
                 for shape in body.shapes:
                     self.space.remove(shape)
                 self.space.remove(body)
