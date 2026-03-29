@@ -1,15 +1,18 @@
 import cv2
 import numpy as np
+import pygame
 import config
 from camera import CameraManager
 from vision import ColorTracker
 from physics import PhysicsEngine
+from renderer import PygameRenderer
 
 def main():
     # 1. Initialisation
     cpt = 0
     cam = CameraManager()
     engine = PhysicsEngine()
+    renderer = PygameRenderer()
     
     # --- NOUVELLE COULEUR : ROSE (#E8B7C7) ---
     # Teinte (H) : entre 160 et 180 (les roses/violets)
@@ -35,18 +38,27 @@ def main():
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                 
             positions = engine.get_balls_positions()
+            
+            renderer.clear_screen()
+            renderer.draw_balls(positions)
+            renderer.update_display()
+            
             for pos in positions:
                 cv2.circle(frame, pos, config.BALL_RADIUS, (255, 255, 255), -1)
                 
             cv2.imshow("Suivi Post-it (Original)", frame)
-            cv2.imshow("Masque Noir et Blanc", mask)
+            #cv2.imshow("Masque Noir et Blanc", mask)
             
             engine.step()
+            engine.clean_balls()
             
             if cpt % config.SPAWN_RATE == 0:
                 engine.spawn_ball()
                 
             cpt = cpt + 1
+            
+            for event in pygame.event.get():
+                pass
             
         # 3. Condition de sortie (Appuyer sur 'q')
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -55,6 +67,7 @@ def main():
     # 4. Nettoyage
     cam.release()
     cv2.destroyAllWindows()
+    pygame.quit()
 
 if __name__ == "__main__":
     main()

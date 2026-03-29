@@ -50,3 +50,12 @@ class PhysicsEngine:
         for body in self.listBalls:
             positions.append((int(body.position.x), int(body.position.y)))
         return positions
+    
+    def clean_balls(self):
+        for body in self.listBalls[:]:
+            if body.position.y > config.CAMERA_HEIGHT + 50:
+                for shape in body.shapes:
+                    self.space.remove(shape)
+                self.space.remove(body)
+                self.listBalls.remove(body)
+            
