@@ -1,22 +1,30 @@
 # Real-Time Interactive Projection Mapping
 
-## 📝 About The Project
-This project is an interactive projection mapping application built in Python. It uses computer vision to detect physical objects (like brightly colored Post-its) on a wall in real-time. A 2D physics engine then simulates virtual balls falling and bouncing off these real-world obstacles, and the result is projected back onto the wall to create a mixed-reality experience.
+## Description
+This project is an interactive projection mapping application built in Python. It bridges the physical and digital worlds by using computer vision to track real-world objects (such as colored markers or Post-its) on a physical surface. A 2D physics engine simulates virtual objects interacting with these physical obstacles, and the output is projected back onto the surface in real-time, creating a seamless mixed-reality experience.
 
-## 🛠️ Built With
-* **Python 3.13**
-* **OpenCV** - For real-time computer vision and color tracking.
-* **Pymunk** - For the 2D rigid body physics simulation.
-* **Pygame** - For rendering the graphics sent to the projector.
-* **Numpy** - For matrix and array mathematical operations.
+## How It Works (Architecture)
+The system operates on a continuous pipeline across four main components:
 
-## ⚙️ Prerequisites & Hardware
-* A webcam or smartphone connected as a webcam (e.g., using Windows Phone Link).
-* A video projector (configured as a secondary monitor).
-* Python 3.10 or higher.
+1. **Vision & Tracking (OpenCV):** A camera captures the projection surface. The video feed is processed using HSV color space thresholding to isolate and track specific physical markers dynamically.
+2. **Spatial Calibration (Homography):** Because the camera and projector have different resolutions, aspect ratios, and physical perspectives, the system uses a 4-point manual calibration. OpenCV computes a homography matrix to warp and translate the camera's coordinate system into the projector's exact coordinate space.
+3. **Physics Simulation (Pymunk):** The aligned coordinates of the physical markers are converted into static rigid bodies within a 2D physics space. Virtual objects (e.g., falling balls) are spawned as dynamic bodies that calculate collisions and gravity against the static physical obstacles.
+4. **Rendering (Pygame):** The engine renders the virtual objects as high-contrast shapes (white on a black background). When projected, the black background emits no light, leaving only the virtual objects visible on the physical wall.
 
-## 🚀 Installation
-1. Clone the repository or download the project files.
+## Built With
+* Python 3.13
+* OpenCV - Real-time computer vision and contour extraction.
+* Pymunk - 2D rigid body physics simulation.
+* Pygame - Fullscreen graphics rendering.
+* Numpy - Matrix operations and homography calculations.
+
+## Prerequisites & Hardware
+* A camera (e.g., webcam or smartphone connected via Windows Phone Link).
+* A video projector configured as a secondary monitor (Extended Display).
+* A physical surface with brightly colored markers (e.g., pink Post-its).
+
+## Installation
+1. Clone the repository or download the source files.
 2. Open a terminal in the project directory and create a virtual environment:
    ```bash
    python -m venv venv
@@ -29,18 +37,21 @@ This project is an interactive projection mapping application built in Python. I
    pip install opencv-python pygame pymunk numpy
    ```
 
-## 🎮 How to Use
-1. Ensure your camera is connected and your projector is turned on.
-2. Adjust the `CAMERA_URL`, `SCREEN_WIDTH`, and `SCREEN_HEIGHT` in `config.py` to match your hardware setup.
-3. Run the main script:
+## Usage
+1. Setup your hardware: connect the camera and turn on the projector. Ensure the projector is set as an extended display.
+2. Adjust `CAMERA_URL`, `SCREEN_WIDTH`, and `SCREEN_HEIGHT` in `config.py` to match your specific hardware resolution (e.g., 1024x768 for older projectors).
+3. Run the application:
    ```bash
    python main.py
    ```
-4. Place physical markers (e.g., pink Post-its) on the projected surface.
-5. Press the `q` key on the OpenCV window to cleanly exit the application.
+4. **Calibration Phase:**
+   * A red bounding box will be projected onto the wall.
+   * On your computer monitor, view the OpenCV camera feed.
+   * Click exactly on the 4 corners of the projected red box in the video feed in the following order: Top-Left, Top-Right, Bottom-Right, Bottom-Left.
+5. **Interactive Phase:** Once calibrated, the physics simulation will start. Place your physical markers on the wall to see the virtual objects bounce off them.
+6. Press the `q` key on the OpenCV window to safely terminate the process and close the physics engine.
 
-## 📋 To-Do List (Next Steps)
-- [ ] **Camera-to-Projector Calibration:** Implement a homography matrix to align the camera's perspective (16:9) with the projector's output (4:3 native).
-- [ ] **Calibration Mode:** Add a UI state to capture 4 corner points via mouse clicks for dynamic perspective warping.
-- [ ] **Lighting Adjustment:** Fine-tune HSV tracking thresholds to compensate for the projector's high luminosity (ANSI Lumens) washing out the physical markers.
-- [ ] **Game Design:** Add goals, dynamic spawning, or varying obstacle types.
+## Future Improvements
+* Dynamic adjustment UI for HSV thresholds to compensate for projector blooming.
+* Implementation of game mechanics (goals, scoring system).
+* Automatic ArUco marker calibration to replace manual 4-point clicking.
