@@ -13,8 +13,8 @@ CAMERA_HEIGHT = 720
 # 📽️ PARAMÈTRES DU PROJECTEUR (AFFICHAGE)
 # ==========================================
 # Résolution de la fenêtre Pygame (idéalement la résolution de ton beamer)
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 768
 FPS = 60 # Images par seconde pour la boucle principale
 
 # ==========================================
